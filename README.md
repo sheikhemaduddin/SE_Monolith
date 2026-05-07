@@ -1,4 +1,4 @@
-# Cloudways Monorepo — React + Express
+# Cloudways Monolith — React + Express
 
 ## Structure
 ```
