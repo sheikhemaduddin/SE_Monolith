@@ -26,4 +26,15 @@ app.get('/api/products', (req, res) => res.json({
   }))
 }));
 
-app.listen(PORT, () => console.log(`API running → http://localhost:${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`API running → http://localhost:${PORT}`)
+);
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(
+      `Port ${PORT} is already in use (another API instance may be running). Stop it or set PORT to a free port.`
+    );
+    process.exit(1);
+  }
+  throw err;
+});
