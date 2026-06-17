@@ -1,61 +1,170 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import Sidebar from './components/Sidebar'
+import StatsGrid from './components/StatsGrid'
+import ProductGrid from './components/ProductGrid'
+import ApiPanel from './components/ApiPanel'
+import { RefreshIcon } from './components/Icons'
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
+const PAGES = {
+  overview: {
+    title: 'Overview',
+    subtitle: 'Real-time snapshot of your monorepo services',
+  },
+  products: {
+    title: 'Products',
+    subtitle: 'Live catalog fetched from the Express API',
+  },
+  api: {
+    title: 'API Status',
+    subtitle: 'Backend health and configuration details',
+  },
+}
 
 export default function App() {
-  const [info, setInfo]       = useState(null)
+  const [page, setPage] = useState('overview')
+  const [info, setInfo] = useState(null)
   const [products, setProducts] = useState([])
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    fetch(`${API}/api/info`).then(r => r.json()).then(setInfo).catch(() => {})
-    fetch(`${API}/api/products`).then(r => r.json()).then(d => setProducts(d.data || [])).catch(() => {})
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true)
+    else setLoading(true)
+    setError(null)
+
+    try {
+      const [infoRes, productsRes] = await Promise.all([
+        fetch(`${API}/api/info`),
+        fetch(`${API}/api/products`),
+      ])
+
+      if (!infoRes.ok || !productsRes.ok) throw new Error('API returned an error')
+
+      const [infoData, productsData] = await Promise.all([
+        infoRes.json(),
+        productsRes.json(),
+      ])
+
+      setInfo(infoData)
+      setProducts(productsData.data || [])
+    } catch {
+      setInfo(null)
+      setProducts([])
+      setError(`Unable to reach API at ${API}`)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }, [])
 
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const { title, subtitle } = PAGES[page]
+  const connected = !loading && !!info
+
   return (
-    <div style={{fontFamily:'sans-serif',minHeight:'100vh',background:'#f0f4f8',padding:24}}>
-      <div style={{maxWidth:800,margin:'0 auto'}}>
-        <div style={{background:'#1D3557',color:'white',padding:'20px 28px',borderRadius:12,marginBottom:20,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <div>
-            <h1 style={{margin:0,fontSize:20}}>⚡ Cloudways Monorepo</h1>
-            <p style={{margin:'4px 0 0',fontSize:12,opacity:.7}}>packages/web — React Frontend</p>
-          </div>
-          <span style={{background:'#1D9E75',padding:'4px 12px',borderRadius:20,fontSize:12}}>✓ Online</span>
-        </div>
+    <div className="app">
+      <div className="bg-glow" />
+      <Sidebar
+        active={page}
+        onNavigate={setPage}
+        connected={connected}
+        apiUrl={API}
+      />
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
-          <div style={{background:'white',padding:20,borderRadius:12,boxShadow:'0 2px 8px rgba(0,0,0,.07)'}}>
-            <h3 style={{margin:'0 0 12px',fontSize:13,color:'#888',textTransform:'uppercase'}}>API Info</h3>
-            {info ? Object.entries(info).map(([k,v]) => (
-              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid #f5f5f5',fontSize:13}}>
-                <span style={{color:'#888'}}>{k}</span>
-                <strong>{String(v)}</strong>
+      <main className="main">
+        <div className="main-inner">
+          <header className="page-header">
+            <h2>{title}</h2>
+            <p>{subtitle}</p>
+          </header>
+
+          {(page === 'overview' || page === 'products') && (
+            <StatsGrid info={info} products={products} loading={loading} />
+          )}
+
+          {page === 'overview' && (
+            <>
+              <section className="section">
+                <div className="section-header">
+                  <div>
+                    <h3 className="section-title">Recent Products</h3>
+                    <p className="section-subtitle">Showing first 4 from catalog</p>
+                  </div>
+                  <button
+                    className={`refresh-btn${refreshing ? ' spinning' : ''}`}
+                    onClick={() => fetchData(true)}
+                    disabled={refreshing}
+                  >
+                    <RefreshIcon />
+                    Refresh
+                  </button>
+                </div>
+                <ProductGrid
+                  products={products.slice(0, 4)}
+                  loading={loading}
+                  error={error}
+                />
+              </section>
+
+              <section className="section">
+                <div className="section-header">
+                  <div>
+                    <h3 className="section-title">API Configuration</h3>
+                    <p className="section-subtitle">Backend service details</p>
+                  </div>
+                </div>
+                <ApiPanel info={info} loading={loading} apiUrl={API} />
+              </section>
+            </>
+          )}
+
+          {page === 'products' && (
+            <section className="section">
+              <div className="section-header">
+                <div>
+                  <h3 className="section-title">All Products</h3>
+                  <p className="section-subtitle">{products.length} items in catalog</p>
+                </div>
+                <button
+                  className={`refresh-btn${refreshing ? ' spinning' : ''}`}
+                  onClick={() => fetchData(true)}
+                  disabled={refreshing}
+                >
+                  <RefreshIcon />
+                  Refresh
+                </button>
               </div>
-            )) : <p style={{color:'#aaa',fontSize:13}}>Connecting to API at {API}...</p>}
-          </div>
+              <ProductGrid products={products} loading={loading} error={error} />
+            </section>
+          )}
 
-          <div style={{background:'white',padding:20,borderRadius:12,boxShadow:'0 2px 8px rgba(0,0,0,.07)'}}>
-            <h3 style={{margin:'0 0 12px',fontSize:13,color:'#888',textTransform:'uppercase'}}>Products from API</h3>
-            {products.length ? products.map(p => (
-              <div key={p.id} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid #f5f5f5',fontSize:13}}>
-                <span>{p.name}</span>
-                <strong style={{color:'#1D9E75'}}>${p.price}</strong>
+          {page === 'api' && (
+            <section className="section">
+              <div className="section-header">
+                <div>
+                  <h3 className="section-title">Service Health</h3>
+                  <p className="section-subtitle">Express backend at packages/api</p>
+                </div>
+                <button
+                  className={`refresh-btn${refreshing ? ' spinning' : ''}`}
+                  onClick={() => fetchData(true)}
+                  disabled={refreshing}
+                >
+                  <RefreshIcon />
+                  Refresh
+                </button>
               </div>
-            )) : <p style={{color:'#aaa',fontSize:13}}>No products loaded</p>}
-          </div>
+              <ApiPanel info={info} loading={loading} apiUrl={API} />
+            </section>
+          )}
         </div>
-
-        <div style={{background:'#1a1a2e',borderRadius:12,padding:20,color:'#93c5fd',fontFamily:'monospace',fontSize:12}}>
-          <div style={{marginBottom:8,color:'#888'}}>Monorepo structure:</div>
-          <pre style={{margin:0,lineHeight:1.8}}>{`cloudways-monorepo/
-├── package.json          ← root workspace
-├── packages/
-│   ├── api/              ← Express backend (deploy separately)
-│   │   ├── src/index.js
-│   │   └── package.json  @cloudways-monorepo/api
-│   └── web/              ← React frontend (deploy separately)
-│       ├── src/App.jsx
-│       └── package.json  @cloudways-monorepo/web`}</pre>
-        </div>
-      </div>
+      </main>
     </div>
   )
 }
