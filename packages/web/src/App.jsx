@@ -25,6 +25,7 @@ const PAGES = {
 export default function App() {
   const [page, setPage] = useState('overview')
   const [info, setInfo] = useState(null)
+  const [health, setHealth] = useState(null)
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -36,23 +37,27 @@ export default function App() {
     setError(null)
 
     try {
-      const [infoRes, productsRes] = await Promise.all([
+      const [infoRes, productsRes, healthRes] = await Promise.all([
         fetch(`${API}/api/info`),
         fetch(`${API}/api/products`),
+        fetch(`${API}/health`),
       ])
 
       if (!infoRes.ok || !productsRes.ok) throw new Error('API returned an error')
 
-      const [infoData, productsData] = await Promise.all([
+      const [infoData, productsData, healthData] = await Promise.all([
         infoRes.json(),
         productsRes.json(),
+        healthRes.ok ? healthRes.json() : null,
       ])
 
       setInfo(infoData)
       setProducts(productsData.data || [])
+      setHealth(healthData)
     } catch {
       setInfo(null)
       setProducts([])
+      setHealth(null)
       setError(`Unable to reach API at ${API}`)
     } finally {
       setLoading(false)
@@ -145,23 +150,74 @@ export default function App() {
           )}
 
           {page === 'api' && (
-            <section className="section">
-              <div className="section-header">
-                <div>
-                  <h3 className="section-title">Service Health</h3>
-                  <p className="section-subtitle">Express backend at packages/api</p>
+            <>
+              <section className="section">
+                <div className="section-header">
+                  <div>
+                    <h3 className="section-title">Service Health</h3>
+                    <p className="section-subtitle">Express backend at packages/api</p>
+                  </div>
+                  <button
+                    className={`refresh-btn${refreshing ? ' spinning' : ''}`}
+                    onClick={() => fetchData(true)}
+                    disabled={refreshing}
+                  >
+                    <RefreshIcon />
+                    Refresh
+                  </button>
                 </div>
-                <button
-                  className={`refresh-btn${refreshing ? ' spinning' : ''}`}
-                  onClick={() => fetchData(true)}
-                  disabled={refreshing}
-                >
-                  <RefreshIcon />
-                  Refresh
-                </button>
-              </div>
-              <ApiPanel info={info} loading={loading} apiUrl={API} />
-            </section>
+                <ApiPanel info={info} loading={loading} apiUrl={API} />
+              </section>
+
+              <section className="section">
+                <div className="section-header">
+                  <div>
+                    <h3 className="section-title">Live Health Check</h3>
+                    <p className="section-subtitle">Response from GET /health</p>
+                  </div>
+                </div>
+                <div className="api-panel">
+                  <div className="api-panel-header">
+                    <h3>Uptime & Status</h3>
+                    {health?.status === 'ok' && (
+                      <span className="env-tag ok-tag">healthy</span>
+                    )}
+                  </div>
+                  <div className="api-rows">
+                    {loading ? (
+                      Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="api-row">
+                          <div className="skeleton skeleton-row" />
+                          <div className="skeleton skeleton-row" style={{ width: '30%' }} />
+                        </div>
+                      ))
+                    ) : health ? (
+                      <>
+                        <div className="api-row">
+                          <span className="api-row-key">Status</span>
+                          <span className="api-row-value ok">{health.status}</span>
+                        </div>
+                        <div className="api-row">
+                          <span className="api-row-key">Service</span>
+                          <span className="api-row-value">{health.service}</span>
+                        </div>
+                        <div className="api-row">
+                          <span className="api-row-key">Uptime</span>
+                          <span className="api-row-value">
+                            {Math.floor(health.uptime)}s
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="empty-state" style={{ padding: '2rem' }}>
+                        <h4>Health check unavailable</h4>
+                        <p>Could not reach {API}/health</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            </>
           )}
         </div>
       </main>

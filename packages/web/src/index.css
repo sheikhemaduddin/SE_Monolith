@@ -433,6 +433,11 @@ body {
   letter-spacing: 0.04em;
 }
 
+.env-tag.ok-tag {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
 .api-rows {
   padding: 0.5rem 0;
 }
