@@ -1,9 +1,10 @@
-import { LogoIcon, GridIcon, PackageIcon, ServerIcon } from './Icons'
+import { LogoIcon, GridIcon, PackageIcon, ServerIcon, ActivityIcon } from './Icons'
 
 const NAV = [
   { id: 'overview', label: 'Overview', icon: GridIcon },
   { id: 'products', label: 'Products', icon: PackageIcon },
   { id: 'api', label: 'API Status', icon: ServerIcon },
+  { id: 'orders', label: 'Orders', icon: ActivityIcon },
 ]
 
 export default function Sidebar({ active, onNavigate, connected, apiUrl }) {

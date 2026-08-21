@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import StatsGrid from './components/StatsGrid'
 import ProductGrid from './components/ProductGrid'
 import ApiPanel from './components/ApiPanel'
+import OrdersPanel from './components/OrdersPanel'
 import { RefreshIcon } from './components/Icons'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
@@ -20,6 +21,10 @@ const PAGES = {
     title: 'API Status',
     subtitle: 'Backend health and configuration details',
   },
+  orders: {
+    title: 'Orders',
+    subtitle: 'Recent orders fetched from GET /api/orders',
+  },
 }
 
 export default function App() {
@@ -27,6 +32,7 @@ export default function App() {
   const [info, setInfo] = useState(null)
   const [health, setHealth] = useState(null)
   const [products, setProducts] = useState([])
+  const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState(null)
@@ -37,27 +43,33 @@ export default function App() {
     setError(null)
 
     try {
-      const [infoRes, productsRes, healthRes] = await Promise.all([
+      const [infoRes, productsRes, healthRes, ordersRes] = await Promise.all([
         fetch(`${API}/api/info`),
         fetch(`${API}/api/products`),
         fetch(`${API}/health`),
+        fetch(`${API}/api/orders`),
       ])
 
-      if (!infoRes.ok || !productsRes.ok) throw new Error('API returned an error')
+      if (!infoRes.ok || !productsRes.ok || !ordersRes.ok) {
+        throw new Error('API returned an error')
+      }
 
-      const [infoData, productsData, healthData] = await Promise.all([
+      const [infoData, productsData, healthData, ordersData] = await Promise.all([
         infoRes.json(),
         productsRes.json(),
         healthRes.ok ? healthRes.json() : null,
+        ordersRes.json(),
       ])
 
       setInfo(infoData)
       setProducts(productsData.data || [])
       setHealth(healthData)
+      setOrders(ordersData.data || [])
     } catch {
       setInfo(null)
       setProducts([])
       setHealth(null)
+      setOrders([])
       setError(`Unable to reach API at ${API}`)
     } finally {
       setLoading(false)
@@ -218,6 +230,26 @@ export default function App() {
                 </div>
               </section>
             </>
+          )}
+
+          {page === 'orders' && (
+            <section className="section">
+              <div className="section-header">
+                <div>
+                  <h3 className="section-title">Recent Orders</h3>
+                  <p className="section-subtitle">{orders.length} orders from /api/orders</p>
+                </div>
+                <button
+                  className={`refresh-btn${refreshing ? ' spinning' : ''}`}
+                  onClick={() => fetchData(true)}
+                  disabled={refreshing}
+                >
+                  <RefreshIcon />
+                  Refresh
+                </button>
+              </div>
+              <OrdersPanel orders={orders} loading={loading} error={error} />
+            </section>
           )}
         </div>
       </main>

@@ -26,6 +26,24 @@ app.get('/api/products', (req, res) => res.json({
   }))
 }));
 
+const ORDER_STATUSES = ['pending', 'processing', 'shipped', 'delivered'];
+const CUSTOMERS = ['Alex Kim', 'Jordan Lee', 'Sam Rivera', 'Casey Morgan', 'Riley Chen'];
+
+app.get('/api/orders', (req, res) => {
+  const data = Array.from({ length: 8 }, (_, i) => {
+    const total = parseFloat((Math.random() * 250 + 25).toFixed(2));
+    return {
+      id: `ORD-${1000 + i}`,
+      customer: CUSTOMERS[i % CUSTOMERS.length],
+      items: Math.floor(Math.random() * 5) + 1,
+      total,
+      status: ORDER_STATUSES[i % ORDER_STATUSES.length],
+      createdAt: new Date(Date.now() - i * 3600_000 * 6).toISOString(),
+    };
+  });
+  res.json({ data, count: data.length });
+});
+
 module.exports = app;
 
 if (require.main === module) {
