@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -9,6 +9,11 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'api', uptime: process.uptime() }));
+
+app.get('/', (req, res) => res.json({
+  service: 'Cloudways Monorepo API',
+  endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats'],
+}));
 
 app.get('/api/info', (req, res) => res.json({
   name: 'Cloudways Monorepo API',
@@ -43,6 +48,13 @@ app.get('/api/orders', (req, res) => {
   });
   res.json({ data, count: data.length });
 });
+
+app.get('/api/stats', (req, res) => res.json({
+  products: 10,
+  orders: 8,
+  uptime: Math.floor(process.uptime()),
+  env: process.env.NODE_ENV || 'development',
+}));
 
 module.exports = app;
 

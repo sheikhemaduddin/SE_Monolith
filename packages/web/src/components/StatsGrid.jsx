@@ -1,6 +1,6 @@
 import { PackageIcon, ActivityIcon, CodeIcon, ServerIcon } from './Icons'
 
-export default function StatsGrid({ info, products, loading }) {
+export default function StatsGrid({ info, products, orders, loading }) {
   const cards = [
     {
       label: 'Total Products',
@@ -9,22 +9,22 @@ export default function StatsGrid({ info, products, loading }) {
       color: 'purple',
     },
     {
+      label: 'Total Orders',
+      value: loading ? null : String(orders.length),
+      icon: ActivityIcon,
+      color: 'blue',
+    },
+    {
       label: 'API Status',
       value: loading ? null : info ? 'Healthy' : 'Offline',
-      icon: ActivityIcon,
+      icon: ServerIcon,
       color: 'green',
     },
     {
       label: 'Environment',
       value: loading ? null : info?.env || '—',
-      icon: ServerIcon,
-      color: 'amber',
-    },
-    {
-      label: 'Node Version',
-      value: loading ? null : info?.nodeVersion || '—',
       icon: CodeIcon,
-      color: 'blue',
+      color: 'amber',
       small: true,
     },
   ]

@@ -32,9 +32,11 @@ monorepo/
 ## Local Setup
 ```bash
 npm install          # installs all workspace dependencies
-npm run start:api    # starts API on localhost:3001
+npm run start:api    # starts API on localhost:3002
 npm run dev:web      # starts React on localhost:5173
 ```
+
+> **Note:** Port 3002 is used locally to avoid conflicts with other services that may occupy 3001 (e.g. SSH tunnels).
 
 ## ⚠️ Cloudways Monorepo Challenge
 Cloudways runs install from root directory.

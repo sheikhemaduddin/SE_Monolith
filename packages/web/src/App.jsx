@@ -6,7 +6,7 @@ import ApiPanel from './components/ApiPanel'
 import OrdersPanel from './components/OrdersPanel'
 import { RefreshIcon } from './components/Icons'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3002'
 
 const PAGES = {
   overview: {
@@ -102,7 +102,7 @@ export default function App() {
           </header>
 
           {(page === 'overview' || page === 'products') && (
-            <StatsGrid info={info} products={products} loading={loading} />
+            <StatsGrid info={info} products={products} orders={orders} loading={loading} />
           )}
 
           {page === 'overview' && (
