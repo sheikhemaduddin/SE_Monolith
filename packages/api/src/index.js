@@ -8,16 +8,23 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/health', (req, res) => res.json({ status: 'ok', service: 'api', uptime: process.uptime() }));
+app.get('/health', (req, res) => res.json({
+  status: 'ok',
+  service: 'api',
+  version: '1.0.1',
+  uptime: process.uptime(),
+}));
 
 app.get('/', (req, res) => res.json({
   service: 'Cloudways Monorepo API',
+  version: '1.0.1',
   endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats'],
 }));
 
 app.get('/api/info', (req, res) => res.json({
   name: 'Cloudways Monorepo API',
   package: 'packages/api',
+  version: '1.0.1',
   nodeVersion: process.version,
   env: process.env.NODE_ENV || 'development',
   apiSecret: process.env.API_SECRET ? 'set ✓' : 'not set',
