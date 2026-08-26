@@ -11,20 +11,20 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => res.json({
   status: 'ok',
   service: 'api',
-  version: '1.0.1',
+  version: '1.0.2',
   uptime: process.uptime(),
 }));
 
 app.get('/', (req, res) => res.json({
   service: 'Cloudways Monorepo API',
-  version: '1.0.1',
-  endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats'],
+  version: '1.0.2',
+  endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats', '/api/customers'],
 }));
 
 app.get('/api/info', (req, res) => res.json({
   name: 'Cloudways Monorepo API',
   package: 'packages/api',
-  version: '1.0.1',
+  version: '1.0.2',
   nodeVersion: process.version,
   env: process.env.NODE_ENV || 'development',
   apiSecret: process.env.API_SECRET ? 'set ✓' : 'not set',
@@ -59,9 +59,20 @@ app.get('/api/orders', (req, res) => {
 app.get('/api/stats', (req, res) => res.json({
   products: 10,
   orders: 8,
+  customers: 5,
   uptime: Math.floor(process.uptime()),
   env: process.env.NODE_ENV || 'development',
 }));
+
+app.get('/api/customers', (req, res) => {
+  const data = CUSTOMERS.map((name, i) => ({
+    id: i + 1,
+    name,
+    email: `${name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+    orders: Math.floor(Math.random() * 6) + 1,
+  }));
+  res.json({ data, count: data.length });
+});
 
 module.exports = app;
 
