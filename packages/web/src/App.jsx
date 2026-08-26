@@ -10,8 +10,8 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:3002'
 
 const PAGES = {
   overview: {
-    title: 'Overview',
-    subtitle: 'Real-time snapshot of your monorepo services',
+    title: 'Dashboard',
+    subtitle: 'Your monorepo at a glance — products, orders, and service health',
   },
   products: {
     title: 'Products',

@@ -15,8 +15,8 @@ export default function Sidebar({ active, onNavigate, connected, apiUrl }) {
           <LogoIcon />
         </div>
         <div className="brand-text">
-          <h1>Nexus</h1>
-          <span>Monorepo Dashboard</span>
+          <h1>Pulse</h1>
+          <span>Cloud Dashboard</span>
         </div>
       </div>
 

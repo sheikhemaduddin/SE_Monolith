@@ -80,10 +80,10 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent-strong), #a78bfa);
+  background: linear-gradient(135deg, #6366f1, #ec4899);
   display: grid;
   place-items: center;
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.25);
 }
 
 .brand-icon svg {
