@@ -15,7 +15,7 @@ export default function Sidebar({ active, onNavigate, connected, apiUrl }) {
           <LogoIcon />
         </div>
         <div className="brand-text">
-          <h1>Pulse</h1>
+          <h1>Orbit</h1>
           <span>Cloud Dashboard</span>
         </div>
       </div>
