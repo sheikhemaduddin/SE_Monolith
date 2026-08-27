@@ -11,23 +11,28 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => res.json({
   status: 'ok',
   service: 'api',
-  version: '1.0.2',
+  version: '1.0.3',
   uptime: process.uptime(),
 }));
 
 app.get('/', (req, res) => res.json({
   service: 'Cloudways Monorepo API',
-  version: '1.0.2',
-  endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats', '/api/customers'],
+  version: '1.0.3',
+  endpoints: ['/health', '/api/info', '/api/products', '/api/orders', '/api/stats', '/api/customers', '/api/ping'],
 }));
 
 app.get('/api/info', (req, res) => res.json({
   name: 'Cloudways Monorepo API',
   package: 'packages/api',
-  version: '1.0.2',
+  version: '1.0.3',
   nodeVersion: process.version,
   env: process.env.NODE_ENV || 'development',
   apiSecret: process.env.API_SECRET ? 'set ✓' : 'not set',
+}));
+
+app.get('/api/ping', (req, res) => res.json({
+  pong: true,
+  timestamp: new Date().toISOString(),
 }));
 
 app.get('/api/products', (req, res) => res.json({
