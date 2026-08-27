@@ -6,7 +6,7 @@ monorepo/
 ├── package.json           ← root (npm workspaces)
 ├── packages/
 │   ├── api/               ← Express backend
-│   └── web/               ← React frontend
+│   └── ui/                ← React frontend
 ```
 
 ## Deploy on Cloudways — TWO separate apps
@@ -19,13 +19,13 @@ monorepo/
 | Entry File | src/index.js |
 | Package Manager | npm |
 
-### App 2 — Web (React)
+### App 2 — UI (React)
 | Field | Value |
 |---|---|
 | Framework Preset | React |
-| Root Directory | packages/web |
+| Root Directory | packages/ui |
 | Build Command | run build |
-| Output Directory | packages/web/dist |
+| Output Directory | packages/ui/dist |
 | Package Manager | npm |
 | Env Var | VITE_API_URL = https://your-api-app.cloudways.com |
 
@@ -33,7 +33,7 @@ monorepo/
 ```bash
 npm install          # installs all workspace dependencies
 npm run start:api    # starts API on localhost:3002
-npm run dev:web      # starts React on localhost:5173
+npm run dev:ui       # starts React on localhost:5173
 ```
 
 > **Note:** Port 3002 is used locally to avoid conflicts with other services that may occupy 3001 (e.g. SSH tunnels).
@@ -41,5 +41,5 @@ npm run dev:web      # starts React on localhost:5173
 ## ⚠️ Cloudways Monorepo Challenge
 Cloudways runs install from root directory.
 - API deploy: set Root Directory to `packages/api`
-- Web deploy: set Root Directory to `packages/web`
-- Set VITE_API_URL env var on the web app pointing to your deployed API URL
+- UI deploy: set Root Directory to `packages/ui`
+- Set VITE_API_URL env var on the UI app pointing to your deployed API URL

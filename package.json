@@ -4,10 +4,11 @@
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
-    "build:web": "npm run build --workspace=packages/web",
+    "build:ui": "npm run build --workspace=packages/ui",
     "build:api": "npm run build --workspace=packages/api",
     "start:api": "npm run start --workspace=packages/api",
-    "dev:web": "npm run dev --workspace=packages/web"
+    "dev:ui": "npm run dev --workspace=packages/ui",
+    "dev:web": "npm run dev --workspace=packages/ui"
   },
   "engines": { "node": ">=18.0.0" }
 }
