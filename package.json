@@ -5,8 +5,10 @@
   "workspaces": ["packages/*"],
   "scripts": {
     "build:ui": "npm run build --workspace=packages/ui",
-    "build:api": "npm run build --workspace=packages/api",
-    "start:api": "npm run start --workspace=packages/api",
+    "build:mw": "npm run build --workspace=packages/mw",
+    "start:mw": "npm run start --workspace=packages/mw",
+    "build:api": "npm run build --workspace=packages/mw",
+    "start:api": "npm run start --workspace=packages/mw",
     "dev:ui": "npm run dev --workspace=packages/ui",
     "dev:web": "npm run dev --workspace=packages/ui"
   },

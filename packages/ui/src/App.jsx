@@ -167,7 +167,7 @@ export default function App() {
                 <div className="section-header">
                   <div>
                     <h3 className="section-title">Service Health</h3>
-                    <p className="section-subtitle">Express backend at packages/api</p>
+                    <p className="section-subtitle">Express backend at packages/mw</p>
                   </div>
                   <button
                     className={`refresh-btn${refreshing ? ' spinning' : ''}`}

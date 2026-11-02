@@ -23,7 +23,7 @@ app.get('/', (req, res) => res.json({
 
 app.get('/api/info', (req, res) => res.json({
   name: 'Cloudways Monorepo API',
-  package: 'packages/api',
+  package: 'packages/mw',
   version: '1.0.3',
   nodeVersion: process.version,
   env: process.env.NODE_ENV || 'development',
